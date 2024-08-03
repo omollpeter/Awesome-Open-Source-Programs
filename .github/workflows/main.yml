@@ -1,0 +1,46 @@
+name: Welcome to CI/CD with GitHub actions
+
+om:
+  issues:
+    types: [closed]
+  pull_request_target:
+      types: [opened]
+
+job:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      name: Welcome Issue
+      if: github.event_name == 'issues'
+      uses: actions/github@v5
+      with:
+        script:
+          const issue = context.issue;
+          const repo = context.repo;
+          const issueAuthor = context.payload.sender.login
+
+          const welcomeMessage = `Hi @${issueAuthor} :wave:. We appreciate your contribution`
+
+          github.rest.issues.createComment({
+            ...repo,
+            issue_number: issue.number,
+            body: welcomeMessage
+          });
+
+      name: Welcome Pull Request
+      if: github.event_name == 'pull_request_target'
+      uses: actions/github@v5
+      with:
+        script:
+          const pr = context.issue;
+          const repo = context.repo;
+          const prAuthor = context.payload.sender.login
+
+          const welcomeMessage = `Hi @${prAuthor} :wave:. Thank you for submitting a PR`
+
+          github.rest.issues.createComment({
+            ...repo,
+            issue_number: pr.number,
+            body: welcomeMessage
+          });
+
